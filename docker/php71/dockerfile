@@ -2,6 +2,6 @@ FROM php:7.1-fpm
 
 VOLUME /var/www/html
 
-COPY src/php/index.php /var/www/html
+COPY ./src/php/index.php /var/www/html
 
 CMD ["php-fpm"]
