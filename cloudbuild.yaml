@@ -1,0 +1,26 @@
+steps:
+##nginx
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build', '-f', 'docker/nginx/dockerfile', '-t', 'gcr.io/$PROJECT_ID/nginx:$SHORT_SHA', '.']
+  id: 'build1'
+- name: 'gcr.io/cloud-builders/kubectl'
+  args: ['set', 'image', "deployment/nginx", "nginx=gcr.io/$PROJECT_ID/nginx:$SHORT_SHA"]
+  env:
+  - 'CLOUDSDK_COMPUTE_ZONE=asia-east1-a'
+  - 'CLOUDSDK_CONTAINER_CLUSTER=learnkube'
+  wait_for: ['build1']
+
+##php
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build', '-f', 'docker/php71/dockerfile', '-t', 'gcr.io/$PROJECT_ID/php71:$SHORT_SHA', '.']
+  id: 'build2'
+- name: 'gcr.io/cloud-builders/kubectl'
+  args: ['set', 'image', "deployment/php", "php=gcr.io/$PROJECT_ID/php71:$SHORT_SHA"]
+  env:
+  - 'CLOUDSDK_COMPUTE_ZONE=asia-east1-a'
+  - 'CLOUDSDK_CONTAINER_CLUSTER=learnkube'
+  wait_for: ['build2']
+images:
+- 'gcr.io/$PROJECT_ID/nginx:$SHORT_SHA'
+- 'gcr.io/$PROJECT_ID/php71:$SHORT_SHA'
+
